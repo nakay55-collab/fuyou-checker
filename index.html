@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>扶養チェッカー（2026年版）</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="page-header">
+  <h1>扶養チェッカー</h1>
+  <p class="sub">奥様のパート・お子さんのバイト、いくらまで「扶養」？ <span class="badge">2026年版（令和8年分）</span></p>
+  <p class="lead">続柄と年収を入力すると、「ご家族があなたの社会保険に入れるもの（社会保険の扶養）」と「あなたの税金が安くなるもの（税金の扶養）」それぞれに当てはまるかを一覧で確認できます。入力内容はこの端末内だけで計算され、どこにも送信・保存されません。</p>
+</header>
+
+<main>
+  <form id="checker-form" autocomplete="off">
+
+    <section class="card">
+      <h2>1. 対象となるご家族</h2>
+      <div class="radio-group" id="relation-group">
+        <label class="radio-card">
+          <input type="radio" name="relation" value="spouse">
+          <span>配偶者（パート）</span>
+        </label>
+        <label class="radio-card">
+          <input type="radio" name="relation" value="child">
+          <span>お子さん</span>
+        </label>
+        <label class="radio-card">
+          <input type="radio" name="relation" value="parent">
+          <span>同居・別居の親</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card" id="detail-child" hidden>
+      <h2>2. お子さんについて</h2>
+      <label class="field">
+        <span>年齢（現在）</span>
+        <input type="number" id="child-age" min="0" max="99" inputmode="numeric">
+      </label>
+      <p class="hint" id="child-bracket-hint"></p>
+    </section>
+
+    <section class="card" id="detail-parent" hidden>
+      <h2>2. 親御さんについて</h2>
+      <label class="field">
+        <span>年齢（現在）</span>
+        <input type="number" id="parent-age" min="0" max="120" inputmode="numeric">
+      </label>
+      <div class="radio-group inline">
+        <label class="radio-card">
+          <input type="radio" name="cohabit" value="together">
+          <span>同居</span>
+        </label>
+        <label class="radio-card">
+          <input type="radio" name="cohabit" value="apart">
+          <span>別居</span>
+        </label>
+      </div>
+      <label class="field" id="employee-income-for-parent-wrap" hidden>
+        <span>あなた（社員本人）のおおよその年収（万円）</span>
+        <input type="number" id="employee-income-for-parent" min="0" inputmode="numeric">
+        <small>親御さんの年収があなたの年収の半分未満かどうかの判定に使います</small>
+      </label>
+      <label class="field" id="remittance-wrap" hidden>
+        <span>親御さんへの仕送り額（年額・万円）</span>
+        <input type="number" id="remittance" min="0" inputmode="numeric">
+        <small>別居の場合、親御さんの年収が仕送り額より少ないことが条件です</small>
+      </label>
+    </section>
+
+    <section class="card" id="income-section" hidden>
+      <h2 id="income-step-label">3. 年収の入力</h2>
+
+      <label class="field">
+        <span id="income-main-label">年収（見込み・実績）（万円）</span>
+        <input type="number" id="income-main" min="0" inputmode="numeric">
+        <small>社会保険は「これから1年の見込み」、税金は「1〜12月の実績」で判定しますが、まずは同じ金額で概算できます。</small>
+      </label>
+
+      <button type="button" id="toggle-advanced" class="link-button">見込みと実績の金額が違う場合はこちら</button>
+
+      <div id="advanced-income" hidden>
+        <label class="field">
+          <span>社会保険用：これから1年の見込み年収（万円）</span>
+          <input type="number" id="income-social" min="0" inputmode="numeric">
+        </label>
+        <label class="field">
+          <span>税金用：1〜12月の実績年収（万円）</span>
+          <input type="number" id="income-tax" min="0" inputmode="numeric">
+        </label>
+      </div>
+
+      <label class="checkbox-field" id="wall106-wrap" hidden>
+        <input type="checkbox" id="wall106">
+        <span>パート先の従業員が51人以上で、週20時間以上働いている</span>
+      </label>
+
+      <label class="field" id="employee-income-for-spouse-wrap" hidden>
+        <span>あなた（社員本人）のおおよその年収（万円）</span>
+        <input type="number" id="employee-income-for-spouse" min="0" inputmode="numeric">
+        <small>あなたの所得が900万円超だと配偶者控除は減額、1,000万円超でゼロになります</small>
+      </label>
+    </section>
+
+  </form>
+
+  <section class="card result" id="result" hidden>
+    <h2>判定結果</h2>
+
+    <div class="result-block social">
+      <h3>ご家族があなたの社会保険に入れるもの<small>（社会保険の扶養／健康保険・国民年金）</small></h3>
+      <p class="verdict" id="social-verdict"></p>
+      <p class="detail" id="social-detail"></p>
+    </div>
+
+    <div class="result-block tax">
+      <h3>あなたの税金が安くなるもの<small>（税金の扶養／所得税・住民税）</small></h3>
+      <p class="verdict" id="tax-verdict"></p>
+      <p class="detail" id="tax-detail"></p>
+    </div>
+
+    <div class="wall-map" id="wall-map"></div>
+
+    <div class="notes" id="result-notes"></div>
+  </section>
+
+  <p class="empty-state" id="empty-state">続柄を選んで年収を入力すると、ここに判定結果が表示されます。</p>
+</main>
+
+<footer class="page-footer">
+  <p>この判定は目安です。労働条件通知書の写しなど正式な手続きは総務へご相談ください。</p>
+  <p>出典：国税庁タックスアンサー・「令和8年度税制改正Q&amp;A」、財務省「令和8年度税制改正の大綱の概要」、総務省「令和8年度地方税制改正（案）」、日本年金機構、厚生労働省「年収の壁への対応」「社会保険の加入拡大のポイント」（2026年版・令和8年分。2027年以降は数字が変わります）</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
