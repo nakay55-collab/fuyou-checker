@@ -345,6 +345,12 @@ main {
   margin: 0 0 6px;
 }
 
+.page-footer .last-updated {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
 @media (max-width: 480px) {
   .radio-group { grid-template-columns: 1fr; }
   .radio-group.inline { grid-template-columns: 1fr 1fr; }
