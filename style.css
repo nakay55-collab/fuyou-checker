@@ -193,6 +193,24 @@ main {
   margin-top: -4px;
 }
 
+.primary-button {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 4px 0 20px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.02rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button:active {
+  opacity: 0.85;
+}
+
 .result-block {
   border-radius: 10px;
   padding: 14px 16px;

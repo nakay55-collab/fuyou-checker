@@ -18,21 +18,32 @@
   const eiDetail = document.getElementById("ei-detail");
   const resultNotes = document.getElementById("result-notes");
 
-  form.addEventListener("input", compute);
-  form.addEventListener("change", compute);
+  let hasSubmitted = false;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    hasSubmitted = true;
+    compute();
+  });
+
+  function showIncomplete(message) {
+    resultSection.hidden = true;
+    emptyState.hidden = false;
+    emptyState.textContent = hasSubmitted
+      ? message
+      : "年齢と働き方を入力してから「判定する」ボタンを押してください。";
+  }
 
   function compute() {
     const age = Number(ageInput.value);
     if (ageInput.value === "" || !Number.isFinite(age)) {
-      resultSection.hidden = true;
-      emptyState.hidden = false;
+      showIncomplete("年齢を入力してください。");
       return;
     }
 
     const weeklyHours = Number(weeklyHoursInput.value);
     if (weeklyHoursInput.value === "" || !Number.isFinite(weeklyHours)) {
-      resultSection.hidden = true;
-      emptyState.hidden = false;
+      showIncomplete("1週間の所定労働時間を入力してください。");
       return;
     }
 

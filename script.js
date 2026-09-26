@@ -106,11 +106,23 @@
       advancedIncome.setAttribute("hidden", "");
       toggleAdvancedBtn.textContent = "見込みと実績の金額が違う場合はこちら";
     }
+  });
+
+  let hasSubmitted = false;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    hasSubmitted = true;
     compute();
   });
 
-  form.addEventListener("input", compute);
-  form.addEventListener("change", compute);
+  function showIncomplete(message) {
+    resultSection.hidden = true;
+    emptyState.hidden = false;
+    emptyState.textContent = hasSubmitted
+      ? message
+      : "続柄を選び、年収を入力してから「判定する」ボタンを押してください。";
+  }
 
   function getRelation() {
     const checked = document.querySelector('input[name="relation"]:checked');
@@ -158,8 +170,6 @@
       incomeStepLabel.textContent = "3. 親御さんの年収の入力";
       incomeMainLabel.textContent = "親御さんの年収（万円・年金収入も含む）";
     }
-
-    compute();
   }
 
   function getIncomes() {
@@ -177,15 +187,13 @@
   function compute() {
     const relation = getRelation();
     if (!relation) {
-      resultSection.hidden = true;
-      emptyState.hidden = false;
+      showIncomplete("対象となるご家族を選んでください。");
       return;
     }
 
     const { social: socialIncome, tax: taxIncome } = getIncomes();
     if (!Number.isFinite(socialIncome) || !Number.isFinite(taxIncome) || incomeMainInput.value === "" && advancedIncome.hasAttribute("hidden")) {
-      resultSection.hidden = true;
-      emptyState.hidden = false;
+      showIncomplete("年収を入力してください。");
       return;
     }
 
@@ -239,8 +247,7 @@
     if (relation === "child") {
       const age = Number(childAgeInput.value);
       if (!Number.isFinite(age) || childAgeInput.value === "") {
-        resultSection.hidden = true;
-        emptyState.hidden = false;
+        showIncomplete("お子さんの年齢を入力してください。");
         return;
       }
       const bracket = childBracket(age);
@@ -319,8 +326,7 @@
       const age = Number(parentAgeInput.value);
       const cohabit = getCohabit();
       if (!Number.isFinite(age) || parentAgeInput.value === "" || !cohabit) {
-        resultSection.hidden = true;
-        emptyState.hidden = false;
+        showIncomplete("親御さんの年齢と、同居・別居を選んでください。");
         return;
       }
 
