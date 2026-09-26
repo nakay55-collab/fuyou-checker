@@ -196,13 +196,13 @@ main {
 .primary-button {
   display: block;
   width: 100%;
-  padding: 14px;
-  margin: 4px 0 20px;
+  padding: 21px;
+  margin: 6px 0 30px;
   background: var(--ink);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  font-size: 1.02rem;
+  border-radius: 14px;
+  font-size: 1.53rem;
   font-weight: 600;
   cursor: pointer;
 }
