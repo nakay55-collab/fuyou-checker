@@ -26,6 +26,7 @@
 
   const wall106Wrap = document.getElementById("wall106-wrap");
   const wall106Input = document.getElementById("wall106");
+  const shahoLinkHint = document.getElementById("shaho-link-hint");
   const employeeIncomeForSpouseWrap = document.getElementById("employee-income-for-spouse-wrap");
   const employeeIncomeForSpouseInput = document.getElementById("employee-income-for-spouse");
 
@@ -128,6 +129,7 @@
     detailParent.hidden = relation !== "parent";
     incomeSection.hidden = !relation;
     wall106Wrap.hidden = !(relation === "spouse" || relation === "child");
+    shahoLinkHint.hidden = wall106Wrap.hidden;
     employeeIncomeForSpouseWrap.hidden = relation !== "spouse";
 
     if (relation === "child") {

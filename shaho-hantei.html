@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社会保険 加入判定チェッカー（2026年10月版）</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="page-header">
+  <h1>社会保険 加入判定チェッカー</h1>
+  <p class="sub">自分の働き方で、この会社の社会保険に入るかどうか <span class="badge">2026年10月1日基準</span></p>
+  <p class="lead">勤務条件を入力すると、この会社の「健康保険・厚生年金」と「雇用保険」にそれぞれ加入することになるかを確認できます。加入することになる場合は、収入に関わらず配偶者・親などの扶養からは外れます。入力内容はこの端末内だけで計算され、どこにも送信・保存されません。</p>
+  <p class="hint"><a href="index.html">扶養チェッカー（ご家族の扶養判定）はこちら</a></p>
+</header>
+
+<main>
+  <form id="shaho-form" autocomplete="off">
+
+    <section class="card">
+      <h2>1. 年齢</h2>
+      <label class="field">
+        <span>年齢（現在）</span>
+        <input type="number" id="age" min="0" max="120" inputmode="numeric">
+        <small>厚生年金は70歳未満、健康保険は75歳未満の方が対象です</small>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>2. 雇用契約について</h2>
+      <label class="checkbox-field">
+        <input type="checkbox" id="renewable">
+        <span>雇用契約が更新される見込みがある（更新条項がある、または実質的に継続雇用が見込まれる）</span>
+      </label>
+      <label class="field">
+        <span>雇用期間の見込み</span>
+        <select id="duration">
+          <option value="under31">31日以内</option>
+          <option value="31to2m">31日を超えるが2ヶ月未満</option>
+          <option value="over2m" selected>2ヶ月以上</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>3. 働き方</h2>
+      <label class="field">
+        <span>1週間の所定労働時間（時間）</span>
+        <input type="number" id="weekly-hours" min="0" max="80" inputmode="numeric">
+      </label>
+      <label class="field">
+        <span>1ヶ月の所定労働日数（日）</span>
+        <input type="number" id="monthly-days" min="0" max="31" inputmode="numeric">
+        <small>フルタイム区分の判定に使います（短時間勤務の場合は空欄のままで構いません）</small>
+      </label>
+      <label class="field">
+        <span>学生ですか？</span>
+        <select id="student">
+          <option value="none">学生ではない</option>
+          <option value="day">昼間学生</option>
+          <option value="night">夜間・通信制の学生</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>勤務先（この会社）の従業員数</span>
+        <select id="company-size">
+          <option value="51plus">51人以上</option>
+          <option value="under51">51人未満</option>
+          <option value="unknown">わからない</option>
+        </select>
+      </label>
+    </section>
+
+  </form>
+
+  <section class="card result" id="result" hidden>
+    <h2>判定結果</h2>
+
+    <div class="result-block social">
+      <h3>健康保険・厚生年金<small>（この会社で加入するか）</small></h3>
+      <p class="verdict" id="hp-verdict"></p>
+      <p class="detail" id="hp-detail"></p>
+    </div>
+
+    <div class="result-block tax">
+      <h3>雇用保険<small>（この会社で加入するか）</small></h3>
+      <p class="verdict" id="ei-verdict"></p>
+      <p class="detail" id="ei-detail"></p>
+    </div>
+
+    <div class="notes" id="result-notes"></div>
+  </section>
+
+  <p class="empty-state" id="empty-state">年齢と働き方を入力すると、ここに判定結果が表示されます。</p>
+</main>
+
+<footer class="page-footer">
+  <p id="last-updated" class="last-updated">最終更新日：2026年9月27日</p>
+  <p>この判定は目安です。実際の加入手続きは労働条件通知書の内容にもとづき総務が行います。迷う場合は総務へご相談ください。</p>
+  <p>出典：厚生労働省「社会保険の加入拡大のポイント」、日本年金機構、雇用保険法にもとづく一般的な加入基準（2026年10月1日〜。企業規模要件は51人以上→2027年10月:36人以上→2029年10月:21人以上→2032年10月:11人以上→2035年10月:全企業の順に段階的に拡大予定）</p>
+</footer>
+
+<script src="shaho-hantei.js"></script>
+</body>
+</html>
