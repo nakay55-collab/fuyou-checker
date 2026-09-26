@@ -173,15 +173,21 @@
   }
 
   function getIncomes() {
-    const useAdvanced = !advancedIncome.hasAttribute("hidden");
+    const useAdvanced = !advancedIncome.hasAttribute("hidden")
+      && incomeSocialInput.value !== ""
+      && incomeTaxInput.value !== "";
     if (useAdvanced) {
       return {
         social: Number(incomeSocialInput.value),
         tax: Number(incomeTaxInput.value),
+        provided: true,
       };
     }
-    const main = Number(incomeMainInput.value);
-    return { social: main, tax: main };
+    return {
+      social: Number(incomeMainInput.value),
+      tax: Number(incomeMainInput.value),
+      provided: incomeMainInput.value !== "",
+    };
   }
 
   function compute() {
@@ -191,8 +197,8 @@
       return;
     }
 
-    const { social: socialIncome, tax: taxIncome } = getIncomes();
-    if (!Number.isFinite(socialIncome) || !Number.isFinite(taxIncome) || incomeMainInput.value === "" && advancedIncome.hasAttribute("hidden")) {
+    const { social: socialIncome, tax: taxIncome, provided } = getIncomes();
+    if (!provided || !Number.isFinite(socialIncome) || !Number.isFinite(taxIncome)) {
       showIncomplete("年収を入力してください。");
       return;
     }
