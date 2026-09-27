@@ -34,6 +34,7 @@
   const emptyState = document.getElementById("empty-state");
   const socialVerdict = document.getElementById("social-verdict");
   const socialDetail = document.getElementById("social-detail");
+  const wall106AlertEl = document.getElementById("wall106-alert");
   const taxVerdict = document.getElementById("tax-verdict");
   const taxDetail = document.getElementById("tax-detail");
   const wallMap = document.getElementById("wall-map");
@@ -209,6 +210,7 @@
     let wallTicks = [];
     let socialLine = null;
     let taxBand = null;
+    let wall106Alert = null;
 
     const wall106Checked = wall106Input.checked && !wall106Wrap.hidden;
 
@@ -217,7 +219,7 @@
       let socialOk = socialIncome < socialLimit;
       if (wall106Checked) {
         socialOk = false;
-        notes.push("週20時間以上・従業員51人以上のパート先では、130万円未満でもご本人が社会保険に加入するため、扶養からは外れます（第3号にもなれません）。");
+        wall106Alert = "「パート先の従業員が51人以上・週20時間以上」にチェックが入っているため、年収に関係なくご本人が勤務先の社会保険に加入することになり、扶養からは外れます（第3号にもなれません）。";
       }
       social.ok = socialOk;
       social.label = socialOk ? "扶養に入れる（対象）" : "扶養から外れる（対象外）";
@@ -260,6 +262,9 @@
 
       if (bracket === "15under") {
         const socialOk = socialIncome < 130 && !wall106Checked;
+        if (wall106Checked) {
+          wall106Alert = "「パート先の従業員が51人以上・週20時間以上」にチェックが入っているため、年収に関係なくご本人が勤務先の社会保険に加入することになり、扶養からは外れます。";
+        }
         social.ok = socialOk;
         social.label = socialOk ? "扶養に入れる（対象）" : "扶養から外れる（対象外）";
         social.detail = "年収130万円未満（通常は問題になりません）。";
@@ -272,7 +277,7 @@
 
       if (bracket === "16to18") {
         let socialOk = socialIncome < 130;
-        if (wall106Checked) { socialOk = false; notes.push("週20時間以上・従業員51人以上のパート先では、130万円未満でもご本人が社会保険に加入し、扶養からは外れます。"); }
+        if (wall106Checked) { socialOk = false; wall106Alert = "「パート先の従業員が51人以上・週20時間以上」にチェックが入っているため、年収に関係なくご本人が勤務先の社会保険に加入することになり、扶養からは外れます。"; }
         social.ok = socialOk;
         social.label = socialOk ? "扶養に入れる（対象）" : "扶養から外れる（対象外）";
         social.detail = `社会保険の扶養は年収130万円未満（これから1年の見込み）が条件です。入力された見込み年収は${fmt(socialIncome)}万円です。`;
@@ -290,7 +295,7 @@
 
       if (bracket === "19to22") {
         let socialOk = socialIncome < 150;
-        if (wall106Checked) { socialOk = false; notes.push("週20時間以上・従業員51人以上のパート先では、150万円未満でもご本人が社会保険に加入し、扶養からは外れます。"); }
+        if (wall106Checked) { socialOk = false; wall106Alert = "「パート先の従業員が51人以上・週20時間以上」にチェックが入っているため、年収に関係なくご本人が勤務先の社会保険に加入することになり、扶養からは外れます。"; }
         social.ok = socialOk;
         social.label = socialOk ? "扶養に入れる（対象）" : "扶養から外れる（対象外）";
         social.detail = `社会保険の扶養は年収150万円未満（これから1年の見込み・2025年10月〜）が条件です。入力された見込み年収は${fmt(socialIncome)}万円です。23歳になると130万円未満に戻ります。20歳からの国民年金はご本人が加入します（学生納付特例あり）。`;
@@ -311,7 +316,7 @@
 
       if (bracket === "23up") {
         let socialOk = socialIncome < 130;
-        if (wall106Checked) { socialOk = false; notes.push("週20時間以上・従業員51人以上のパート先では、130万円未満でもご本人が社会保険に加入し、扶養からは外れます。"); }
+        if (wall106Checked) { socialOk = false; wall106Alert = "「パート先の従業員が51人以上・週20時間以上」にチェックが入っているため、年収に関係なくご本人が勤務先の社会保険に加入することになり、扶養からは外れます。"; }
         social.ok = socialOk;
         social.label = socialOk ? "扶養に入れる（対象）" : "扶養から外れる（対象外）";
         social.detail = `社会保険の扶養は年収130万円未満（これから1年の見込み）が条件です。入力された見込み年収は${fmt(socialIncome)}万円です。国民年金はご本人が加入します。`;
@@ -386,16 +391,23 @@
       taxBand = { from: 0, to: 136 };
     }
 
-    renderResult(relation, social, tax, notes, wallTicks, socialLine, taxBand, socialIncome, taxIncome);
+    renderResult(relation, social, tax, notes, wallTicks, socialLine, taxBand, socialIncome, taxIncome, wall106Alert);
   }
 
-  function renderResult(relation, social, tax, notes, wallTicks, socialLine, taxBand, socialIncome, taxIncome) {
+  function renderResult(relation, social, tax, notes, wallTicks, socialLine, taxBand, socialIncome, taxIncome, wall106Alert) {
     resultSection.hidden = false;
     emptyState.hidden = true;
 
     socialVerdict.textContent = social.label;
     socialVerdict.className = "verdict " + (social.ok ? "ok" : "ng");
     socialDetail.textContent = social.detail;
+
+    if (wall106Alert) {
+      wall106AlertEl.textContent = "⚠ " + wall106Alert;
+      wall106AlertEl.hidden = false;
+    } else {
+      wall106AlertEl.hidden = true;
+    }
 
     taxVerdict.textContent = tax.label;
     taxVerdict.className = "verdict " + (tax.deduction > 0 ? "ok" : "ng");
